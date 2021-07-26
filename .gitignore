@@ -1,3 +1,5 @@
 temp/
 python-venv/
+dist/
+*.egg-info/
 *.pyc
