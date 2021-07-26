@@ -19,18 +19,18 @@ class TestConfigValidation(unittest.TestCase):
 
     def test_should_fail_on_missing_leading_slash(self):
         with self.assertRaises(ConfigurationError):
-            items = {
+            item_config = {
                 "P1": {
                     "endpoint": "x/",
                     "template": "page.html",
                 },
             }
 
-            generate(items, templates_by_lang, output_base_path)
+            generate(item_config, templates_by_lang, output_base_path)
 
     def test_should_not_accept_two_identical_page_endpoints(self):
         with self.assertRaises(ConfigurationError):
-            items = {
+            item_config = {
                 "P1": {
                     "endpoint": "/xyz",
                     "template": "page.html",
@@ -41,7 +41,7 @@ class TestConfigValidation(unittest.TestCase):
                 },
             }
 
-            generate(items, templates_by_lang, output_base_path)
+            generate(item_config, templates_by_lang, output_base_path)
 
     def test_should_not_accept_two_identical_static_endpoints(self):
         with self.assertRaises(ConfigurationError):
@@ -60,7 +60,7 @@ class TestConfigValidation(unittest.TestCase):
 
     def test_should_not_accept_two_identical_page_and_static_endpoints(self):
         with self.assertRaises(ConfigurationError):
-            items = {
+            item_config = {
                 "P1": {
                     "endpoint": "/xyz",
                     "template": "page.html",
@@ -71,26 +71,26 @@ class TestConfigValidation(unittest.TestCase):
                 },
             }
 
-            generate(items, templates_by_lang, output_base_path)
+            generate(item_config, templates_by_lang, output_base_path)
 
     def test_should_not_accept_endpoints_with_invalid_characters(self):
         with self.assertRaises(ConfigurationError):
-            items = {
+            item_config = {
                 "P1": {
                     "endpoint": "/xyö",
                     "template": "page.html",
                 },
             }
 
-            generate(items, templates_by_lang, output_base_path)
+            generate(item_config, templates_by_lang, output_base_path)
 
     def test_should_not_accept_endpoints_with_space(self):
         with self.assertRaises(ConfigurationError):
-            items = {
+            item_config = {
                 "P1": {
                     "endpoint": "/xy zz",
                     "template": "page.html",
                 },
             }
 
-            generate(items, templates_by_lang, output_base_path)
+            generate(item_config, templates_by_lang, output_base_path)

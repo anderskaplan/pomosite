@@ -28,7 +28,7 @@ class TestUrlFor(unittest.TestCase):
         return hrefs[0]
 
     def test_should_reference_pages(self):
-        items = {
+        item_config = {
             "P1": {
                 "endpoint": "/",
                 "template": "p1.html",
@@ -52,7 +52,7 @@ class TestUrlFor(unittest.TestCase):
             },
         }
 
-        generate(items, templates_by_lang, output_base_path)
+        generate(item_config, templates_by_lang, output_base_path)
 
         output_file = str(Path(Path(".").resolve(), output_base_path, "index.html"))
         self.assertEqual(self.get_first_a_href(output_file), "./", "link from P1 to P1")
@@ -82,7 +82,7 @@ class TestUrlFor(unittest.TestCase):
             Path(Path(".").resolve(), output_base_path, "a/page/somewhere")
         )
         hrefs = self.get_hrefs(output_file)
-        self.assertEqual(hrefs[0], items["P1"]["endpoint"])
-        self.assertEqual(hrefs[1], items["P2"]["endpoint"])
-        self.assertEqual(hrefs[2], items["P3"]["endpoint"])
-        self.assertEqual(hrefs[3], items["P4"]["endpoint"])
+        self.assertEqual(hrefs[0], item_config["P1"]["endpoint"])
+        self.assertEqual(hrefs[1], item_config["P2"]["endpoint"])
+        self.assertEqual(hrefs[2], item_config["P3"]["endpoint"])
+        self.assertEqual(hrefs[3], item_config["P4"]["endpoint"])

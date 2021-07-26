@@ -16,7 +16,7 @@ class TestMultilingual(unittest.TestCase):
         if p.exists():
             print("removing " + output_base_path)
             shutil.rmtree(output_base_path)
-        items = {
+        item_config = {
             "START": {
                 "endpoint": "/",
                 "template": "start.html",
@@ -43,7 +43,7 @@ class TestMultilingual(unittest.TestCase):
             ("sv", str(Path(content_path, "templates"))),
             ("en", str(Path(output_base_path, "templates-ploc"))),
         ]
-        generate(items, templates_by_lang, output_base_path)
+        generate(item_config, templates_by_lang, output_base_path)
 
     def test_should_generate_pages_in_the_default_language(self):
         output_file = str(Path(Path.cwd(), output_base_path, "index.html"))

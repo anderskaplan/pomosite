@@ -2,7 +2,6 @@ from pathlib import Path
 import jinja2
 import shutil
 import re
-import ast
 
 
 class ConfigurationError(Exception):
@@ -30,9 +29,9 @@ def validate_endpoint(endpoint, item_id):
         raise ConfigurationError('Invalid endpoint "%s" for %s.' % (endpoint, item_id))
 
 
-def validate(pages):
+def validate(item_config):
     all_endpoints = {}
-    for page_id, page in pages.items():
+    for page_id, page in item_config.items():
         if not "endpoint" in page:
             raise ConfigurationError("Endpoint for page id %s is missing." % page_id)
         validate_endpoint(page["endpoint"], "page id %s" % page_id)
@@ -93,12 +92,12 @@ def ensure_parent_dir_exists(path):
         path.parent.mkdir(parents=True)
 
 
-def generate_dynamic_pages(pages, templates_by_lang, output_base_path):
+def generate_dynamic_pages(item_config, templates_by_lang, output_base_path):
     @jinja2.contextfunction
     def url_for(context, id):
-        if id in pages:
-            to_endpoint = pages[id]["endpoint"]
-            if "template" in pages[id]:
+        if id in item_config:
+            to_endpoint = item_config[id]["endpoint"]
+            if "template" in item_config[id]:
                 localized_to_endpoint = localize_endpoint(
                     to_endpoint, context["language_tag"]
                 )
@@ -137,7 +136,7 @@ def generate_dynamic_pages(pages, templates_by_lang, output_base_path):
         jinja_env.globals["url_for"] = url_for
         jinja_env.globals["url_for_language"] = url_for_language
 
-        for page_id, page in pages.items():
+        for page_id, page in item_config.items():
             template = page.get("template", None)
             if template:
                 try:
@@ -159,8 +158,8 @@ def generate_dynamic_pages(pages, templates_by_lang, output_base_path):
                     raise
 
 
-def copy_static_pages(pages, output_base_path):
-    for _, item in pages.items():
+def copy_resources(item_config, output_base_path):
+    for _, item in item_config.items():
         if "source" in item:
             output_path = endpoint_to_output_path(
                 item["endpoint"], output_base_path, None
@@ -169,70 +168,8 @@ def copy_static_pages(pages, output_base_path):
             shutil.copyfile(item["source"], output_path)
 
 
-def generate(pages, templates_by_lang, output_base_path):
+def generate(item_config, templates_by_lang, output_base_path):
     # templates_by_lang: [ (language, template_path), ... ] -- the first entry being the default language
-    validate(pages)
-    copy_static_pages(pages, output_base_path)
-    generate_dynamic_pages(pages, templates_by_lang, output_base_path)
-
-
-def parse_page_config(str):
-    """Parse a page-config string on the format "id: "ID", endpoint: "E", ..."""
-    page_config = {}
-    for item in str.split(","):
-        pair = re.fullmatch(r"\s*([\w\-]+)\s*:\s*(\S+)\s*", item)
-        if pair:
-            page_config[pair[1]] = ast.literal_eval(pair[2])
-    return page_config
-
-
-def add_dynamic_content_templates(path, config):
-    """Find all files in a given directory with a valid page-config header and add them to the config dict."""
-    for file in Path(path).glob("*"):
-        if not file.is_dir():
-            with file.open(mode="r", encoding="utf-8") as f:
-                line = f.readline()
-                match = re.fullmatch(r"\{#(.*)#\}", line.rstrip())
-                if match:
-                    page_config = parse_page_config(match[1])
-                    page_config["template"] = file.name
-                    if "id" in page_config:
-                        config[page_config["id"]] = page_config
-
-
-# add static files from a content directory structure to the page config.
-# files of common types (style sheets, images, etc) are added with their file name as key, so that
-# they can be referred to from dynamic pages. note that this means that they must have unique names.
-# no translation.
-# no exclusion of files with special names, as we may want to include files like ".htaccess".
-
-
-def is_referable_content(file):
-    return file.suffix.lower() in [
-        ".css",
-        ".jpg",
-        ".png",
-        ".eps",
-        ".pdf",
-        ".tif",
-        ".tiff",
-    ]
-
-
-def add_static_content(path, config):
-    for file in Path(path).glob("**/*"):
-        if not file.is_dir():
-            if is_referable_content(file):
-                id = file.name
-            else:
-                id = "_%d" % len(config)
-
-            if id in config:
-                raise ValueError("Static file already exists: " + id)
-
-            endpoint = str(file)[len(path) :].replace("\\", "/")
-
-            config[id] = {
-                "endpoint": endpoint,
-                "source": file,
-            }
+    validate(item_config)
+    copy_resources(item_config, output_base_path)
+    generate_dynamic_pages(item_config, templates_by_lang, output_base_path)
