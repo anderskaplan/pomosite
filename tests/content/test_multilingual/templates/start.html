@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="post" id="ie-warning" style="display: none; margin-top: 2em; margin-bottom: 2em;">
+        <div class="warning">
+            <h3>Din webbläsare är föråldrad</h3>
+            <p>Internet Explorer klarar inte av att visa moderna webbsidor.</p>
+        </div>
+    </div>
+
+    <div class="post">
+        <p>Eposet är en allegori om den mytologiska hjältefiguren från den grekiska antiken, 
+            Herakles, som i sin ungdom ställs inför ett val om vilken livsväg han skall gå. 
+            Han frestas då av den lömska Fru Lusta och hennes tre döttrar Lättja, Flättja och 
+            Kättja och sonen Rus, samtidigt som Fru Dygd försöker tala honom till rätta.</p>
+    </div>
+{% endblock %}
+
+{% block script %}
+window.onload = function() {
+    var ua = window.navigator.userAgent;
+    var isIE = /MSIE|Trident/.test(ua);
+    if (isIE) {
+        var x = document.getElementById("ie-warning");
+        x.style.display = "block";
+    }
+}
+{% endblock %}

@@ -1,0 +1,36 @@
+{# base template for all pages on the site #}
+<!DOCTYPE html>
+<html lang="sv">
+<head profile="http://www.w3.org/2005/10/profile">
+    <meta charset="UTF-8"/>
+    {% block title %}<title>Mycket lim</title>{% endblock %}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    {% block head %}{% endblock %}
+</head>
+<body>
+    <div class="top-menu-bar">
+        <a class="logo" href="{{url_for('START')}}"><img src="{{url_for('lim.jpeg')}}" alt="Mycket lim-logga" /></a>
+        <div class="top-menu-bar-left">
+            <a href="{{url_for('START')}}" class="hidden-below-800w">START</a>
+
+            <a href="{{url_for('OM-OSS')}}#avsnitt">Om oss/ett särskilt avsnitt</a>
+
+            <a href="{{url_for('SCRIPT')}}">script</a>
+
+            <div class="dropdown">
+              <i class="fa fa-globe"></i>
+              <div class="dropdown-container">
+                <a href="{{url_for_language('sv')}}">Svenska</a>
+                <a href="{{url_for_language('en')}}">English</a>
+              </div>
+            </div>
+        </div>
+    </div>
+
+    {% block content %}{% endblock %}
+
+    <script>
+        {% block script %}{% endblock %}
+    </script>
+</body>
+</html>
