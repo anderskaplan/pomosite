@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 import shutil
 from xml.etree import ElementTree
-from pomosite.gen import generate
+from pomosite import generate
 
 content_path = str(Path(Path(__file__).parent, "content/test_templating"))
 templates_by_lang = [("lang", content_path + "/templates")]
@@ -28,7 +28,7 @@ class TestUrlFor(unittest.TestCase):
         return hrefs[0]
 
     def test_should_reference_pages(self):
-        pages = {
+        items = {
             "P1": {
                 "endpoint": "/",
                 "template": "p1.html",
@@ -52,7 +52,7 @@ class TestUrlFor(unittest.TestCase):
             },
         }
 
-        generate(pages, templates_by_lang, output_base_path)
+        generate(items, templates_by_lang, output_base_path)
 
         output_file = str(Path(Path(".").resolve(), output_base_path, "index.html"))
         self.assertEqual(self.get_first_a_href(output_file), "./", "link from P1 to P1")
@@ -82,7 +82,7 @@ class TestUrlFor(unittest.TestCase):
             Path(Path(".").resolve(), output_base_path, "a/page/somewhere")
         )
         hrefs = self.get_hrefs(output_file)
-        self.assertEqual(hrefs[0], pages["P1"]["endpoint"])
-        self.assertEqual(hrefs[1], pages["P2"]["endpoint"])
-        self.assertEqual(hrefs[2], pages["P3"]["endpoint"])
-        self.assertEqual(hrefs[3], pages["P4"]["endpoint"])
+        self.assertEqual(hrefs[0], items["P1"]["endpoint"])
+        self.assertEqual(hrefs[1], items["P2"]["endpoint"])
+        self.assertEqual(hrefs[2], items["P3"]["endpoint"])
+        self.assertEqual(hrefs[3], items["P4"]["endpoint"])

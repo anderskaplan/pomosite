@@ -2,8 +2,7 @@ import unittest
 from pathlib import Path
 import shutil
 from xml.etree import ElementTree
-from pomosite.gen import generate
-from pomosite.translate import translate_page_templates
+from pomosite import generate, translate_page_templates
 
 base_path = Path(__file__).parent
 content_path = Path(base_path, "content/test_multilingual")
@@ -17,7 +16,7 @@ class TestMultilingual(unittest.TestCase):
         if p.exists():
             print("removing " + output_base_path)
             shutil.rmtree(output_base_path)
-        pages = {
+        items = {
             "START": {
                 "endpoint": "/",
                 "template": "start.html",
@@ -44,7 +43,7 @@ class TestMultilingual(unittest.TestCase):
             ("sv", str(Path(content_path, "templates"))),
             ("en", str(Path(output_base_path, "templates-ploc"))),
         ]
-        generate(pages, templates_by_lang, output_base_path)
+        generate(items, templates_by_lang, output_base_path)
 
     def test_should_generate_pages_in_the_default_language(self):
         output_file = str(Path(Path.cwd(), output_base_path, "index.html"))

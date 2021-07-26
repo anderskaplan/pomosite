@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 import shutil
 from xml.etree import ElementTree
-from pomosite.gen import generate, add_dynamic_content_templates
+from pomosite import generate, add_dynamic_content_templates
 
 content_path = str(Path(Path(__file__).parent, "content/test_templating"))
 output_base_path = "temp/test_templating"
@@ -17,17 +17,17 @@ class TestTemplating(unittest.TestCase):
             shutil.rmtree(output_base_path)
 
     def test_should_generate_basic_pages(self):
-        pages = {}
-        add_dynamic_content_templates(content_path + "/templates", pages)
-        self.assertEqual(3, len(pages), "Expected to find three pages")
+        items = {}
+        add_dynamic_content_templates(content_path + "/templates", items)
+        self.assertEqual(3, len(items), "Expected to find three items")
         self.assertEqual(
             True,
-            pages["P1"]["bool-value"],
+            items["P1"]["bool-value"],
             "Expected special config variable to be set correctly",
         )
         templates_by_lang = [("lang", content_path + "/templates")]
 
-        generate(pages, templates_by_lang, output_base_path)
+        generate(items, templates_by_lang, output_base_path)
 
         output_file = str(Path(Path(".").resolve(), output_base_path, "index.html"))
         self.assertTrue(

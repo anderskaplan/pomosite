@@ -5,7 +5,7 @@ import re
 import ast
 
 
-class ValidationError(Exception):
+class ConfigurationError(Exception):
     pass
 
 
@@ -27,17 +27,17 @@ def strip_trailing_slash(s):
 
 def validate_endpoint(endpoint, item_id):
     if not re.fullmatch(r"(/[a-zA-Z0-9_\-\.]*)+", endpoint):
-        raise ValidationError('Invalid endpoint "%s" for %s.' % (endpoint, item_id))
+        raise ConfigurationError('Invalid endpoint "%s" for %s.' % (endpoint, item_id))
 
 
 def validate(pages):
     all_endpoints = {}
     for page_id, page in pages.items():
         if not "endpoint" in page:
-            raise ValidationError("Endpoint for page id %s is missing." % page_id)
+            raise ConfigurationError("Endpoint for page id %s is missing." % page_id)
         validate_endpoint(page["endpoint"], "page id %s" % page_id)
         if page["endpoint"] in all_endpoints:
-            raise ValidationError("Duplicate endpoint %s" % page["endpoint"])
+            raise ConfigurationError("Duplicate endpoint %s" % page["endpoint"])
         all_endpoints[page["endpoint"]] = page_id
 
 

@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 import shutil
 from xml.etree import ElementTree
-from pomosite.gen import generate, ValidationError
+from pomosite import generate, ConfigurationError
 
 content_path = str(Path(Path(__file__).parent, "content/test_templating"))
 templates_by_lang = [("lang", content_path + "/templates")]
@@ -18,19 +18,19 @@ class TestConfigValidation(unittest.TestCase):
             shutil.rmtree(output_base_path)
 
     def test_should_fail_on_missing_leading_slash(self):
-        with self.assertRaises(ValidationError):
-            pages = {
+        with self.assertRaises(ConfigurationError):
+            items = {
                 "P1": {
                     "endpoint": "x/",
                     "template": "page.html",
                 },
             }
 
-            generate(pages, templates_by_lang, output_base_path)
+            generate(items, templates_by_lang, output_base_path)
 
     def test_should_not_accept_two_identical_page_endpoints(self):
-        with self.assertRaises(ValidationError):
-            pages = {
+        with self.assertRaises(ConfigurationError):
+            items = {
                 "P1": {
                     "endpoint": "/xyz",
                     "template": "page.html",
@@ -41,10 +41,10 @@ class TestConfigValidation(unittest.TestCase):
                 },
             }
 
-            generate(pages, templates_by_lang, output_base_path)
+            generate(items, templates_by_lang, output_base_path)
 
     def test_should_not_accept_two_identical_static_endpoints(self):
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(ConfigurationError):
             statics = {
                 "S1": {
                     "endpoint": "/xyz",
@@ -59,8 +59,8 @@ class TestConfigValidation(unittest.TestCase):
             generate(statics, templates_by_lang, output_base_path)
 
     def test_should_not_accept_two_identical_page_and_static_endpoints(self):
-        with self.assertRaises(ValidationError):
-            pages = {
+        with self.assertRaises(ConfigurationError):
+            items = {
                 "P1": {
                     "endpoint": "/xyz",
                     "template": "page.html",
@@ -71,26 +71,26 @@ class TestConfigValidation(unittest.TestCase):
                 },
             }
 
-            generate(pages, templates_by_lang, output_base_path)
+            generate(items, templates_by_lang, output_base_path)
 
     def test_should_not_accept_endpoints_with_invalid_characters(self):
-        with self.assertRaises(ValidationError):
-            pages = {
+        with self.assertRaises(ConfigurationError):
+            items = {
                 "P1": {
                     "endpoint": "/xyö",
                     "template": "page.html",
                 },
             }
 
-            generate(pages, templates_by_lang, output_base_path)
+            generate(items, templates_by_lang, output_base_path)
 
     def test_should_not_accept_endpoints_with_space(self):
-        with self.assertRaises(ValidationError):
-            pages = {
+        with self.assertRaises(ConfigurationError):
+            items = {
                 "P1": {
                     "endpoint": "/xy zz",
                     "template": "page.html",
                 },
             }
 
-            generate(pages, templates_by_lang, output_base_path)
+            generate(items, templates_by_lang, output_base_path)
