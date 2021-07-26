@@ -206,11 +206,21 @@ def add_dynamic_content_templates(path, config):
 # no translation.
 # no exclusion of files with special names, as we may want to include files like ".htaccess".
 
+
 def is_referable_content(file):
-    return file.suffix.lower() in [ '.css', '.jpg', '.png', '.eps', '.pdf', '.tif', '.tiff' ]
+    return file.suffix.lower() in [
+        ".css",
+        ".jpg",
+        ".png",
+        ".eps",
+        ".pdf",
+        ".tif",
+        ".tiff",
+    ]
+
 
 def add_static_content(path, config):
-    for file in Path(path).glob('**/*'):
+    for file in Path(path).glob("**/*"):
         if not file.is_dir():
             if is_referable_content(file):
                 id = file.name
@@ -218,11 +228,11 @@ def add_static_content(path, config):
                 id = "_%d" % len(config)
 
             if id in config:
-                raise ValueError('Static file already exists: ' + id)
+                raise ValueError("Static file already exists: " + id)
 
-            endpoint = str(file)[len(path):].replace('\\', '/')
+            endpoint = str(file)[len(path) :].replace("\\", "/")
 
             config[id] = {
                 "endpoint": endpoint,
-                "source": file
+                "source": file,
             }

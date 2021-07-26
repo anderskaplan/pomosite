@@ -1,3 +1,5 @@
 pytest
 jinja2
 translate-toolkit
+black
+pydocstyle

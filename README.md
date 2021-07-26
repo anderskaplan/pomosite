@@ -22,6 +22,11 @@ This is different from non-static web site frameworks like WordPress or Django. 
 the content is stored in a database, and the web pages are generated on-the-fly on the
 web server when a request comes in.
 
+While "static web site" might sound limiting, this is in fact not the case. Pomosite
+is not limited to plain HTML; its templating engine works with whatever you feed it
+with, as long as it it text based. For example, PHP code to be run on the web server, or
+javascript code to be run in the web browser.
+
 A web site created with pomosite consists of the following:
 - a *templates* directory for the page templates (in the base language)
 - a *resources* directory for style sheets, images, etc
@@ -36,6 +41,7 @@ a version control tool such as git.
 A sample web site can be found in the sample directory.
 
 ## Templates
+
 TODO
 config header syntax
 template syntax
@@ -60,6 +66,11 @@ pip install -r requirements.txt
 
 tests\translate-templates.bat
 pytest
+
+## Run code checks
+
+black .
+pydocstyle
 
 ## Install for local use
 
