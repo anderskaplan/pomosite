@@ -51,7 +51,8 @@ class TestUrlFor(unittest.TestCase):
                     "template": "special-page.html",
                     "rooted-urls": True,
                 },
-            }
+            },
+            "template_dir": content_path + "/templates",
         }
 
         generate(site_config, template_dir_by_lang, output_dir)

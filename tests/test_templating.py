@@ -76,7 +76,8 @@ class TestTemplating(unittest.TestCase):
                     "endpoint": "/xyz",
                     "template": "invalid-ref.html",
                 }
-            }
+            },
+            "template_dir": content_path + "/templates",
         }
 
         # when generating the site

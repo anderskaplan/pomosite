@@ -71,3 +71,12 @@ def add_resources_dir(resources_dir, site_config):
                 "endpoint": endpoint,
                 "source": file,
             }
+
+
+def add_translation(language_tag, po_file_path, translated_template_dir, site_config):
+    if not "translations" in site_config:
+        site_config["translations"] = {}
+    site_config["translations"][language_tag] = {
+        "po_file_path": po_file_path,
+        "translated_template_dir": translated_template_dir,
+    }

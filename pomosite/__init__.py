@@ -4,5 +4,5 @@ More info: https://github.com/anderskaplan/pomosite/blob/main/README.md
 """
 
 from .gen import ConfigurationError, InvalidReferenceError, make_relative_url, generate
-from .itemconfig import create_site_config, add_resources_dir
+from .itemconfig import create_site_config, add_resources_dir, add_translation
 from .translate import translate_page_templates

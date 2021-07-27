@@ -24,7 +24,8 @@ class TestConfigValidation(unittest.TestCase):
                     "endpoint": "x/",
                     "template": "page.html",
                 },
-            }
+            },
+            "template_dir": content_path + "/templates",
         }
         with self.assertRaises(ConfigurationError):
             generate(site_config, template_dir_by_lang, output_dir)
@@ -40,7 +41,8 @@ class TestConfigValidation(unittest.TestCase):
                     "endpoint": "/xyz",
                     "template": "page.html",
                 },
-            }
+            },
+            "template_dir": content_path + "/templates",
         }
         with self.assertRaises(ConfigurationError):
             generate(site_config, template_dir_by_lang, output_dir)
@@ -56,7 +58,8 @@ class TestConfigValidation(unittest.TestCase):
                     "endpoint": "/xyz",
                     "source": Path(content_path, "templates/page.html"),
                 },
-            }
+            },
+            "template_dir": content_path + "/templates",
         }
         with self.assertRaises(ConfigurationError):
             generate(site_config, template_dir_by_lang, output_dir)
@@ -72,7 +75,8 @@ class TestConfigValidation(unittest.TestCase):
                     "endpoint": "/xyz",
                     "source": Path(content_path, "templates/page.html"),
                 },
-            }
+            },
+            "template_dir": content_path + "/templates",
         }
         with self.assertRaises(ConfigurationError):
             generate(site_config, template_dir_by_lang, output_dir)
@@ -84,7 +88,8 @@ class TestConfigValidation(unittest.TestCase):
                     "endpoint": "/xyö",
                     "template": "page.html",
                 },
-            }
+            },
+            "template_dir": content_path + "/templates",
         }
         with self.assertRaises(ConfigurationError):
             generate(site_config, template_dir_by_lang, output_dir)
@@ -96,7 +101,8 @@ class TestConfigValidation(unittest.TestCase):
                     "endpoint": "/xy zz",
                     "template": "page.html",
                 },
-            }
+            },
+            "template_dir": content_path + "/templates",
         }
         with self.assertRaises(ConfigurationError):
             generate(site_config, template_dir_by_lang, output_dir)

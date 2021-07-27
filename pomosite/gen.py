@@ -2,6 +2,7 @@ from pathlib import Path
 import jinja2
 import shutil
 import re
+from .translate import translate_page_templates
 
 
 class ConfigurationError(Exception):
@@ -40,6 +41,8 @@ def validate_config(site_config):
         if page["endpoint"] in all_endpoints:
             raise ConfigurationError("Duplicate endpoint %s" % page["endpoint"])
         all_endpoints[page["endpoint"]] = page_id
+        if "template" in page and not "template_dir" in site_config:
+            raise ConfigurationError("Template directory is missing.")
 
 
 def make_relative_url(from_endpoint, to_endpoint):
@@ -126,10 +129,7 @@ def generate_pages_from_templates(site_config, template_dir_by_lang, output_dir)
         to_endpoint = localize_endpoint(page_endpoint, to_language_tag)
         return make_relative_url(from_endpoint, to_endpoint)
 
-    for index, item in enumerate(template_dir_by_lang):
-        language, template_path = item
-        language_tag = None if index == 0 else language
-
+    def create_jinja_environment(template_path):
         jinja_env = jinja2.Environment(
             loader=jinja2.FileSystemLoader(template_path),
             autoescape=jinja2.select_autoescape([]),
@@ -138,28 +138,36 @@ def generate_pages_from_templates(site_config, template_dir_by_lang, output_dir)
         # jinja_env.lstrip_blocks = True
         jinja_env.globals["url_for"] = url_for
         jinja_env.globals["url_for_language"] = url_for_language
+        return jinja_env
 
+    def render_pages(language_tag, template_path):
+        jinja_env = create_jinja_environment(template_path)
         for page_id, page in site_config["item_config"].items():
             template = page.get("template", None)
-            if template:
-                try:
-                    template = jinja_env.get_template(template)
-                    context = {
-                        "page_id": page_id,
-                        "page_endpoint": page["endpoint"],
-                        "language_tag": language_tag,
-                        "rooted_urls": page.get("rooted-urls", False),
-                    }
-                    rendered_page = template.render(context).encode("utf-8")
-                    output_path = endpoint_to_output_path(
-                        page["endpoint"], output_dir, language_tag
-                    )
-                    ensure_parent_dir_exists(output_path)
-                    with output_path.open(mode="wb") as fh:
-                        fh.write(rendered_page)
-                except Exception as e:
-                    e.page_id = page_id
-                    raise
+            if not template:
+                continue
+            jinja_template = jinja_env.get_template(template)
+            context = {
+                "page_id": page_id,
+                "page_endpoint": page["endpoint"],
+                "language_tag": language_tag,
+                "rooted_urls": page.get("rooted-urls", False),
+            }
+            rendered_page = jinja_template.render(context).encode("utf-8")
+            output_path = endpoint_to_output_path(
+                page["endpoint"], output_dir, language_tag
+            )
+            ensure_parent_dir_exists(output_path)
+            with output_path.open(mode="wb") as fh:
+                fh.write(rendered_page)
+
+    template_dir = site_config.get("template_dir", "#invalid#")
+    render_pages(None, template_dir)
+    translations = site_config.get("translations", {})
+    for language_tag, language_config in translations.items():
+        translated_template_dir = language_config["translated_template_dir"]
+        translate_page_templates(template_dir, language_config["po_file_path"], translated_template_dir)
+        render_pages(language_tag, translated_template_dir)
 
 
 def copy_resources(site_config, output_dir):

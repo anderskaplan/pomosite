@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 import shutil
 from xml.etree import ElementTree
-from pomosite import generate, translate_page_templates
+from pomosite import generate, translate_page_templates, add_translation
 
 base_path = Path(__file__).parent
 content_path = Path(base_path, "content/test_multilingual")
@@ -34,13 +34,10 @@ class TestMultilingual(unittest.TestCase):
                     "endpoint": "/lim.jpeg",
                     "source": Path(content_path, "static/lim.jpeg"),
                 },
-            }
+            },
+            "template_dir": str(content_path / "templates"),
         }
-        translate_page_templates(
-            str(Path(content_path, "templates")),
-            str(Path(base_path, "temp/pseudo.po")),
-            str(Path(output_dir, "templates-ploc")),
-        )
+        add_translation("en", str(base_path / "temp/pseudo.po"), str(Path(output_dir, "templates-ploc")), site_config)
         template_dir_by_lang = [
             ("sv", str(Path(content_path, "templates"))),
             ("en", str(Path(output_dir, "templates-ploc"))),
