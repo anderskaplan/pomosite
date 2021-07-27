@@ -97,22 +97,22 @@ def ensure_parent_dir_exists(path):
 def generate_pages_from_templates(site_config, template_dir_by_lang, output_dir):
     @jinja2.pass_context
     def url_for(context, id):
-        if id in site_config["item_config"]:
-            item = site_config["item_config"][id]
-            to_endpoint = item["endpoint"]
-            if "template" in item:
-                localized_to_endpoint = localize_endpoint(
-                    to_endpoint, context["language_tag"]
-                )
-            else:
-                localized_to_endpoint = to_endpoint
-        else:
+        item = site_config["item_config"].get(id, None)
+        if not item:
             raise InvalidReferenceError('Invalid page id "%s".' % id)
+
+        to_endpoint = item["endpoint"]
+        if "template" in item:
+            localized_to_endpoint = localize_endpoint(
+                to_endpoint, context["language_tag"]
+            )
+        else:
+            localized_to_endpoint = to_endpoint
 
         if context["rooted_urls"]:
             return localized_to_endpoint
         else:
-            from_endpoint = page["endpoint"]
+            from_endpoint = context["page_endpoint"]
             return make_relative_url(
                 localize_endpoint(from_endpoint, context["language_tag"]),
                 localized_to_endpoint,
@@ -120,7 +120,7 @@ def generate_pages_from_templates(site_config, template_dir_by_lang, output_dir)
 
     @jinja2.pass_context
     def url_for_language(context, language):
-        page_endpoint = page["endpoint"]
+        page_endpoint = context["page_endpoint"]
         from_endpoint = localize_endpoint(page_endpoint, context["language_tag"])
         to_language_tag = None if language == template_dir_by_lang[0][0] else language
         to_endpoint = localize_endpoint(page_endpoint, to_language_tag)
@@ -146,6 +146,7 @@ def generate_pages_from_templates(site_config, template_dir_by_lang, output_dir)
                     template = jinja_env.get_template(template)
                     context = {
                         "page_id": page_id,
+                        "page_endpoint": page["endpoint"],
                         "language_tag": language_tag,
                         "rooted_urls": page.get("rooted-urls", False),
                     }
