@@ -38,11 +38,7 @@ class TestMultilingual(unittest.TestCase):
             "template_dir": str(content_path / "templates"),
         }
         add_translation("en", str(base_path / "temp/pseudo.po"), str(Path(output_dir, "templates-ploc")), site_config)
-        template_dir_by_lang = [
-            ("sv", str(Path(content_path, "templates"))),
-            ("en", str(Path(output_dir, "templates-ploc"))),
-        ]
-        generate(site_config, template_dir_by_lang, output_dir)
+        generate(site_config, output_dir)
 
     def test_should_generate_pages_in_the_default_language(self):
         output_file = str(Path(Path.cwd(), output_dir, "index.html"))

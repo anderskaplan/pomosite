@@ -5,7 +5,6 @@ from xml.etree import ElementTree
 from pomosite import generate
 
 content_path = str(Path(Path(__file__).parent, "content/test_templating"))
-template_dir_by_lang = [("lang", content_path + "/templates")]
 output_dir = "temp/test_url_for"
 
 
@@ -55,7 +54,7 @@ class TestUrlFor(unittest.TestCase):
             "template_dir": content_path + "/templates",
         }
 
-        generate(site_config, template_dir_by_lang, output_dir)
+        generate(site_config, output_dir)
 
         output_file = str(Path(Path(".").resolve(), output_dir, "index.html"))
         self.assertEqual(self.get_first_a_href(output_file), "./", "link from P1 to P1")

@@ -5,7 +5,6 @@ from xml.etree import ElementTree
 from pomosite import generate, ConfigurationError
 
 content_path = str(Path(Path(__file__).parent, "content/test_templating"))
-template_dir_by_lang = [("lang", content_path + "/templates")]
 output_dir = "temp/test_validation"
 
 
@@ -28,7 +27,7 @@ class TestConfigValidation(unittest.TestCase):
             "template_dir": content_path + "/templates",
         }
         with self.assertRaises(ConfigurationError):
-            generate(site_config, template_dir_by_lang, output_dir)
+            generate(site_config, output_dir)
 
     def test_should_not_accept_two_identical_page_endpoints(self):
         site_config = {
@@ -45,7 +44,7 @@ class TestConfigValidation(unittest.TestCase):
             "template_dir": content_path + "/templates",
         }
         with self.assertRaises(ConfigurationError):
-            generate(site_config, template_dir_by_lang, output_dir)
+            generate(site_config, output_dir)
 
     def test_should_not_accept_two_identical_static_endpoints(self):
         site_config = {
@@ -62,7 +61,7 @@ class TestConfigValidation(unittest.TestCase):
             "template_dir": content_path + "/templates",
         }
         with self.assertRaises(ConfigurationError):
-            generate(site_config, template_dir_by_lang, output_dir)
+            generate(site_config, output_dir)
 
     def test_should_not_accept_two_identical_page_and_static_endpoints(self):
         site_config = {
@@ -79,7 +78,7 @@ class TestConfigValidation(unittest.TestCase):
             "template_dir": content_path + "/templates",
         }
         with self.assertRaises(ConfigurationError):
-            generate(site_config, template_dir_by_lang, output_dir)
+            generate(site_config, output_dir)
 
     def test_should_not_accept_endpoints_with_invalid_characters(self):
         site_config = {
@@ -92,7 +91,7 @@ class TestConfigValidation(unittest.TestCase):
             "template_dir": content_path + "/templates",
         }
         with self.assertRaises(ConfigurationError):
-            generate(site_config, template_dir_by_lang, output_dir)
+            generate(site_config, output_dir)
 
     def test_should_not_accept_endpoints_with_space(self):
         site_config = {
@@ -105,4 +104,4 @@ class TestConfigValidation(unittest.TestCase):
             "template_dir": content_path + "/templates",
         }
         with self.assertRaises(ConfigurationError):
-            generate(site_config, template_dir_by_lang, output_dir)
+            generate(site_config, output_dir)

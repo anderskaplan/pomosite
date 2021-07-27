@@ -97,7 +97,7 @@ def ensure_parent_dir_exists(path):
         path.parent.mkdir(parents=True)
 
 
-def generate_pages_from_templates(site_config, template_dir_by_lang, output_dir):
+def generate_pages_from_templates(site_config, output_dir):
     @jinja2.pass_context
     def url_for(context, id):
         item = site_config["item_config"].get(id, None)
@@ -122,10 +122,12 @@ def generate_pages_from_templates(site_config, template_dir_by_lang, output_dir)
             )
 
     @jinja2.pass_context
-    def url_for_language(context, language):
+    def url_for_language(context, language_tag):
         page_endpoint = context["page_endpoint"]
         from_endpoint = localize_endpoint(page_endpoint, context["language_tag"])
-        to_language_tag = None if language == template_dir_by_lang[0][0] else language
+        to_language_tag = None
+        if "translations" in site_config and language_tag in site_config["translations"]:
+            to_language_tag = language_tag
         to_endpoint = localize_endpoint(page_endpoint, to_language_tag)
         return make_relative_url(from_endpoint, to_endpoint)
 
@@ -180,8 +182,7 @@ def copy_resources(site_config, output_dir):
             shutil.copyfile(item["source"], output_path)
 
 
-def generate(site_config, template_dir_by_lang, output_dir):
-    # template_dir_by_lang: [ (language, template_path), ... ] -- the first entry being the default language
+def generate(site_config, output_dir):
     validate_config(site_config)
     copy_resources(site_config, output_dir)
-    generate_pages_from_templates(site_config, template_dir_by_lang, output_dir)
+    generate_pages_from_templates(site_config, output_dir)

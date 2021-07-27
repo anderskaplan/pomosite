@@ -25,10 +25,9 @@ class TestTemplating(unittest.TestCase):
             site_config["item_config"]["P1"]["bool-value"],
             "Expected special config variable to be set correctly",
         )
-        template_dir_by_lang = [("lang", content_path + "/templates")]
 
         # when generating the site
-        generate(site_config, template_dir_by_lang, output_dir)
+        generate(site_config, output_dir)
 
         # then the expected output files appear where they are supposed to
         output_file = str(Path(".").resolve() / output_dir / "index.html")
@@ -61,7 +60,7 @@ class TestTemplating(unittest.TestCase):
             }
         }
 
-        generate(site_config, [], output_dir)
+        generate(site_config, output_dir)
 
         output_file = str(Path(Path(".").resolve(), output_dir, "xyz"))
         self.assertTrue(
@@ -83,5 +82,4 @@ class TestTemplating(unittest.TestCase):
         # when generating the site
         # then the appropriate exception is raised
         with self.assertRaises(InvalidReferenceError):
-            template_dir_by_lang = [("lang", content_path + "/templates")]
-            generate(site_config, template_dir_by_lang, output_dir)
+            generate(site_config, output_dir)
