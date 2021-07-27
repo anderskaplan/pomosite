@@ -4,7 +4,7 @@ import shutil
 from xml.etree import ElementTree
 from pomosite import generate, ConfigurationError
 
-content_path = str(Path(Path(__file__).parent, "content/test_templating"))
+content_path = str(Path(Path(__file__).parent, "data/test_templating"))
 output_dir = "temp/test_validation"
 
 

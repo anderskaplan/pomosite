@@ -1,21 +1,41 @@
+import os
 import unittest
 from pathlib import Path
 import shutil
 from xml.etree import ElementTree
+
 from pomosite import generate, add_translation
+from pomosite.translation import extract_translatable_content, generate_dummy_translation
 
 base_path = Path(__file__).parent
-content_path = Path(base_path, "content/test_multilingual")
+content_path = Path(base_path, "data/test_multilingual")
 output_dir = "temp/test_multilingual"
 
 
 class TestMultilingual(unittest.TestCase):
     @classmethod
     def setUpClass(self):
+        self.clear_output_dir()
+        self.generate_dummy_translation()
+        self.generate_site()
+
+    @classmethod
+    def clear_output_dir(self):
         p = Path(output_dir)
         if p.exists():
             print("removing " + output_dir)
             shutil.rmtree(output_dir)
+
+    @classmethod
+    def generate_dummy_translation(self):
+        os.makedirs(str(base_path / "temp"), exist_ok=True)
+        pot_file_path = str(base_path / "temp/test_multilingual.pot")
+        extract_translatable_content(str(content_path / "templates"), pot_file_path)
+        po_file_path = str(base_path / "temp/dummy.po")
+        generate_dummy_translation(pot_file_path, po_file_path)
+
+    @classmethod
+    def generate_site(self):
         site_config = {
             "item_config": {
                 "START": {
@@ -32,12 +52,12 @@ class TestMultilingual(unittest.TestCase):
                 },
                 "lim.jpeg": {
                     "endpoint": "/lim.jpeg",
-                    "source": Path(content_path, "static/lim.jpeg"),
+                    "source": Path(content_path, "resources/lim.jpeg"),
                 },
             },
             "template_dir": str(content_path / "templates"),
         }
-        add_translation("en", str(base_path / "temp/pseudo.po"), str(Path(output_dir, "templates-ploc")), site_config)
+        add_translation("en", str(base_path / "temp/dummy.po"), str(base_path / "temp/translated-templates"), site_config)
         generate(site_config, output_dir)
 
     def test_should_generate_pages_in_the_default_language(self):

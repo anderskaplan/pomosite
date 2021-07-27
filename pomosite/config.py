@@ -13,7 +13,7 @@ def parse_page_config(str):
     return page_config
 
 
-def create_site_config(template_dir, default_language_tag = ""):
+def create_site_config(template_dir):
     """Find all files in a given directory with a valid page-config header and add them to the config dict."""
     item_config = {}
     for file in Path(template_dir).glob("*"):
@@ -29,7 +29,6 @@ def create_site_config(template_dir, default_language_tag = ""):
 
     return {
         "template_dir": template_dir,
-        "default_language_tag": default_language_tag,
         "item_config": item_config,
     }
 
