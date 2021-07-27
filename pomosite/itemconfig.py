@@ -13,9 +13,10 @@ def parse_page_config(str):
     return page_config
 
 
-def add_page_templates_dir(path, item_config):
+def create_site_config(template_dir, default_language_tag = ""):
     """Find all files in a given directory with a valid page-config header and add them to the config dict."""
-    for file in Path(path).glob("*"):
+    item_config = {}
+    for file in Path(template_dir).glob("*"):
         if not file.is_dir():
             with file.open(mode="r", encoding="utf-8") as f:
                 line = f.readline()
@@ -25,6 +26,12 @@ def add_page_templates_dir(path, item_config):
                     page_config["template"] = file.name
                     if "id" in page_config:
                         item_config[page_config["id"]] = page_config
+
+    return {
+        "template_dir": template_dir,
+        "default_language_tag": default_language_tag,
+        "item_config": item_config,
+    }
 
 
 # add static files from a content directory structure to the page config.
@@ -46,8 +53,9 @@ def is_referable_content(file):
     ]
 
 
-def add_resources_dir(path, item_config):
-    for file in Path(path).glob("**/*"):
+def add_resources_dir(resources_dir, site_config):
+    item_config = site_config["item_config"]
+    for file in Path(resources_dir).glob("**/*"):
         if not file.is_dir():
             if is_referable_content(file):
                 id = file.name
@@ -57,7 +65,7 @@ def add_resources_dir(path, item_config):
             if id in item_config:
                 raise ValueError("Static file already exists: " + id)
 
-            endpoint = str(file)[len(path) :].replace("\\", "/")
+            endpoint = str(file)[len(resources_dir) :].replace("\\", "/")
 
             item_config[id] = {
                 "endpoint": endpoint,

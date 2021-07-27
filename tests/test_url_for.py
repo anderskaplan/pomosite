@@ -6,16 +6,16 @@ from pomosite import generate
 
 content_path = str(Path(Path(__file__).parent, "content/test_templating"))
 template_dir_by_lang = [("lang", content_path + "/templates")]
-output_base_path = "temp/test_url_for"
+output_dir = "temp/test_url_for"
 
 
 class TestUrlFor(unittest.TestCase):
     @classmethod
     def setUpClass(self):
-        p = Path(output_base_path)
+        p = Path(output_dir)
         if p.exists():
-            print("removing " + output_base_path)
-            shutil.rmtree(output_base_path)
+            print("removing " + output_dir)
+            shutil.rmtree(output_dir)
 
     def get_hrefs(self, path):
         self.assertTrue(Path(path).exists(), "Expected to find file: " + path)
@@ -28,60 +28,63 @@ class TestUrlFor(unittest.TestCase):
         return hrefs[0]
 
     def test_should_reference_pages(self):
-        item_config = {
-            "P1": {
-                "endpoint": "/",
-                "template": "p1.html",
-            },
-            "P2": {
-                "endpoint": "/subpage/",
-                "template": "p1.html",
-            },
-            "P3": {
-                "endpoint": "/subpage/sub-no-trailing-slash",
-                "template": "p1.html",
-            },
-            "P4": {
-                "endpoint": "/subpage/subsub/",
-                "template": "p1.html",
-            },
-            "404-PAGE": {
-                "endpoint": "/a/page/somewhere",
-                "template": "special-page.html",
-                "rooted-urls": True,
-            },
+        site_config = {
+            "item_config": {
+                "P1": {
+                    "endpoint": "/",
+                    "template": "p1.html",
+                },
+                "P2": {
+                    "endpoint": "/subpage/",
+                    "template": "p1.html",
+                },
+                "P3": {
+                    "endpoint": "/subpage/sub-no-trailing-slash",
+                    "template": "p1.html",
+                },
+                "P4": {
+                    "endpoint": "/subpage/subsub/",
+                    "template": "p1.html",
+                },
+                "404-PAGE": {
+                    "endpoint": "/a/page/somewhere",
+                    "template": "special-page.html",
+                    "rooted-urls": True,
+                },
+            }
         }
 
-        generate(item_config, template_dir_by_lang, output_base_path)
+        generate(site_config, template_dir_by_lang, output_dir)
 
-        output_file = str(Path(Path(".").resolve(), output_base_path, "index.html"))
+        output_file = str(Path(Path(".").resolve(), output_dir, "index.html"))
         self.assertEqual(self.get_first_a_href(output_file), "./", "link from P1 to P1")
 
         output_file = str(
-            Path(Path(".").resolve(), output_base_path, "subpage/index.html")
+            Path(Path(".").resolve(), output_dir, "subpage/index.html")
         )
         self.assertEqual(
             self.get_first_a_href(output_file), "../", "link from P2 to P1"
         )
 
         output_file = str(
-            Path(Path(".").resolve(), output_base_path, "subpage/sub-no-trailing-slash")
+            Path(Path(".").resolve(), output_dir, "subpage/sub-no-trailing-slash")
         )
         self.assertEqual(
             self.get_first_a_href(output_file), "../", "link from P3 to P1"
         )
 
         output_file = str(
-            Path(Path(".").resolve(), output_base_path, "subpage/subsub/index.html")
+            Path(Path(".").resolve(), output_dir, "subpage/subsub/index.html")
         )
         self.assertEqual(
             self.get_first_a_href(output_file), "../../", "link from P4 to P1"
         )
 
         output_file = str(
-            Path(Path(".").resolve(), output_base_path, "a/page/somewhere")
+            Path(Path(".").resolve(), output_dir, "a/page/somewhere")
         )
         hrefs = self.get_hrefs(output_file)
+        item_config = site_config["item_config"]
         self.assertEqual(hrefs[0], item_config["P1"]["endpoint"])
         self.assertEqual(hrefs[1], item_config["P2"]["endpoint"])
         self.assertEqual(hrefs[2], item_config["P3"]["endpoint"])

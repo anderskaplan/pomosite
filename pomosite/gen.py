@@ -29,9 +29,11 @@ def validate_endpoint(endpoint, item_id):
         raise ConfigurationError('Invalid endpoint "%s" for %s.' % (endpoint, item_id))
 
 
-def validate_config(item_config):
+def validate_config(site_config):
+    if not "item_config" in site_config:
+        raise ConfigurationError("Item configuration is missing.")
     all_endpoints = {}
-    for page_id, page in item_config.items():
+    for page_id, page in site_config["item_config"].items():
         if not "endpoint" in page:
             raise ConfigurationError("Endpoint for page id %s is missing." % page_id)
         validate_endpoint(page["endpoint"], "page id %s" % page_id)
@@ -78,13 +80,13 @@ def localize_endpoint(endpoint, language_tag):
     return "/".join(atoms)
 
 
-def endpoint_to_output_path(endpoint, output_base_path, language_tag):
+def endpoint_to_output_path(endpoint, output_dir, language_tag):
     if endpoint.endswith("/"):
         endpoint = endpoint + "index.html"
 
     endpoint = localize_endpoint(endpoint, language_tag)
 
-    return Path(Path(".").resolve(), output_base_path, strip_leading_slash(endpoint))
+    return Path(Path(".").resolve(), output_dir, strip_leading_slash(endpoint))
 
 
 def ensure_parent_dir_exists(path):
@@ -92,12 +94,13 @@ def ensure_parent_dir_exists(path):
         path.parent.mkdir(parents=True)
 
 
-def generate_pages_from_templates(item_config, template_dir_by_lang, output_base_path):
+def generate_pages_from_templates(site_config, template_dir_by_lang, output_dir):
     @jinja2.pass_context
     def url_for(context, id):
-        if id in item_config:
-            to_endpoint = item_config[id]["endpoint"]
-            if "template" in item_config[id]:
+        if id in site_config["item_config"]:
+            item = site_config["item_config"][id]
+            to_endpoint = item["endpoint"]
+            if "template" in item:
                 localized_to_endpoint = localize_endpoint(
                     to_endpoint, context["language_tag"]
                 )
@@ -136,7 +139,7 @@ def generate_pages_from_templates(item_config, template_dir_by_lang, output_base
         jinja_env.globals["url_for"] = url_for
         jinja_env.globals["url_for_language"] = url_for_language
 
-        for page_id, page in item_config.items():
+        for page_id, page in site_config["item_config"].items():
             template = page.get("template", None)
             if template:
                 try:
@@ -148,7 +151,7 @@ def generate_pages_from_templates(item_config, template_dir_by_lang, output_base
                     }
                     rendered_page = template.render(context).encode("utf-8")
                     output_path = endpoint_to_output_path(
-                        page["endpoint"], output_base_path, language_tag
+                        page["endpoint"], output_dir, language_tag
                     )
                     ensure_parent_dir_exists(output_path)
                     with output_path.open(mode="wb") as fh:
@@ -158,18 +161,18 @@ def generate_pages_from_templates(item_config, template_dir_by_lang, output_base
                     raise
 
 
-def copy_resources(item_config, output_base_path):
-    for _, item in item_config.items():
+def copy_resources(site_config, output_dir):
+    for _, item in site_config["item_config"].items():
         if "source" in item:
             output_path = endpoint_to_output_path(
-                item["endpoint"], output_base_path, None
+                item["endpoint"], output_dir, None
             )
             ensure_parent_dir_exists(output_path)
             shutil.copyfile(item["source"], output_path)
 
 
-def generate(item_config, template_dir_by_lang, output_base_path):
+def generate(site_config, template_dir_by_lang, output_dir):
     # template_dir_by_lang: [ (language, template_path), ... ] -- the first entry being the default language
-    validate_config(item_config)
-    copy_resources(item_config, output_base_path)
-    generate_pages_from_templates(item_config, template_dir_by_lang, output_base_path)
+    validate_config(site_config)
+    copy_resources(site_config, output_dir)
+    generate_pages_from_templates(site_config, template_dir_by_lang, output_dir)

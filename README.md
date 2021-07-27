@@ -28,7 +28,7 @@ with, as long as it it text based. For example, PHP code to be run on the web se
 javascript code to be run in the web browser.
 
 A web site created with pomosite consists of the following:
-- a *templates* directory for the page templates (in the base language)
+- a *templates* directory for the page templates (in the default language)
 - a *resources* directory for style sheets, images, etc
 - a *translations* directory for translation files
 - a *generator script* written in python. This script provides some site-specific
@@ -40,28 +40,39 @@ a version control tool such as git.
 
 A sample web site can be found in the sample directory.
 
+## Item config and site generation
+
+config header syntax
+
+item_config format
+items: key unique id. value { endpoint, template or source, optionally other values too }
+can be auto-populated using create_site_config() and add_resources_dir()
+
 ## Templates
 
 TODO
-config header syntax
 template syntax
 referencing content with url_for() and url_for_language()
 
 one template directory per language.
 use translate_page_templates() to generate them from the default language.
 
-item_config format
-items: key unique id. value { endpoint, template or source, optionally other values too }
-can be auto-populated using add_page_templates_dir() and add_resources_dir()
-
 ## Resources
 TODO
+
+whack them in a directory tree
+how to reference them
+unique names
 
 ## Translations
 TODO
 
+workflow
+PO files
+currently only html templates
 
-# Modifying/Extending pomosite
+
+# For developers: Modifying/Extending pomosite
 
 ## Set up the development environment
 
