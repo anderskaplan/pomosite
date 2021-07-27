@@ -8,7 +8,7 @@ class ConfigurationError(Exception):
     pass
 
 
-class InvalidResourceIdError(Exception):
+class InvalidReferenceError(Exception):
     pass
 
 
@@ -29,7 +29,7 @@ def validate_endpoint(endpoint, item_id):
         raise ConfigurationError('Invalid endpoint "%s" for %s.' % (endpoint, item_id))
 
 
-def validate(item_config):
+def validate_config(item_config):
     all_endpoints = {}
     for page_id, page in item_config.items():
         if not "endpoint" in page:
@@ -92,7 +92,7 @@ def ensure_parent_dir_exists(path):
         path.parent.mkdir(parents=True)
 
 
-def generate_dynamic_pages(item_config, templates_by_lang, output_base_path):
+def generate_pages_from_templates(item_config, template_dir_by_lang, output_base_path):
     @jinja2.contextfunction
     def url_for(context, id):
         if id in item_config:
@@ -104,7 +104,7 @@ def generate_dynamic_pages(item_config, templates_by_lang, output_base_path):
             else:
                 localized_to_endpoint = to_endpoint
         else:
-            raise InvalidResourceIdError('Invalid page id "%s".' % id)
+            raise InvalidReferenceError('Invalid page id "%s".' % id)
 
         if context["rooted_urls"]:
             return localized_to_endpoint
@@ -119,11 +119,11 @@ def generate_dynamic_pages(item_config, templates_by_lang, output_base_path):
     def url_for_language(context, language):
         page_endpoint = page["endpoint"]
         from_endpoint = localize_endpoint(page_endpoint, context["language_tag"])
-        to_language_tag = None if language == templates_by_lang[0][0] else language
+        to_language_tag = None if language == template_dir_by_lang[0][0] else language
         to_endpoint = localize_endpoint(page_endpoint, to_language_tag)
         return make_relative_url(from_endpoint, to_endpoint)
 
-    for index, item in enumerate(templates_by_lang):
+    for index, item in enumerate(template_dir_by_lang):
         language, template_path = item
         language_tag = None if index == 0 else language
 
@@ -168,8 +168,8 @@ def copy_resources(item_config, output_base_path):
             shutil.copyfile(item["source"], output_path)
 
 
-def generate(item_config, templates_by_lang, output_base_path):
-    # templates_by_lang: [ (language, template_path), ... ] -- the first entry being the default language
-    validate(item_config)
+def generate(item_config, template_dir_by_lang, output_base_path):
+    # template_dir_by_lang: [ (language, template_path), ... ] -- the first entry being the default language
+    validate_config(item_config)
     copy_resources(item_config, output_base_path)
-    generate_dynamic_pages(item_config, templates_by_lang, output_base_path)
+    generate_pages_from_templates(item_config, template_dir_by_lang, output_base_path)

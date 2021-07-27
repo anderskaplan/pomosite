@@ -45,7 +45,14 @@ A sample web site can be found in the sample directory.
 TODO
 config header syntax
 template syntax
-referencing content with url_for()
+referencing content with url_for() and url_for_language()
+
+one template directory per language.
+use translate_page_templates() to generate them from the default language.
+
+item_config format
+items: key unique id. value { endpoint, template or source, optionally other values too }
+can be auto-populated using add_page_templates_dir() and add_resources_dir()
 
 ## Resources
 TODO
