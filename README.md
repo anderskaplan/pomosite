@@ -71,6 +71,8 @@ workflow
 PO files
 currently only html templates
 
+language tags https://en.wikipedia.org/wiki/IETF_language_tag
+
 
 # For developers: Modifying/Extending pomosite
 

@@ -2,7 +2,7 @@ from pathlib import Path
 import jinja2
 import shutil
 import re
-from .translate import translate_page_templates
+from .translation import translate_page_templates
 
 
 class ConfigurationError(Exception):

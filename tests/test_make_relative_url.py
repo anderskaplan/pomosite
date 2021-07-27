@@ -1,5 +1,5 @@
 import unittest
-from pomosite import make_relative_url
+from pomosite.templating import make_relative_url
 
 
 class TestMakeRelativeUrl(unittest.TestCase):

@@ -2,7 +2,7 @@ import unittest
 from pathlib import Path
 import shutil
 from xml.etree import ElementTree
-from pomosite import generate, translate_page_templates, add_translation
+from pomosite import generate, add_translation
 
 base_path = Path(__file__).parent
 content_path = Path(base_path, "content/test_multilingual")
