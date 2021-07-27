@@ -93,7 +93,7 @@ def ensure_parent_dir_exists(path):
 
 
 def generate_pages_from_templates(item_config, template_dir_by_lang, output_base_path):
-    @jinja2.contextfunction
+    @jinja2.pass_context
     def url_for(context, id):
         if id in item_config:
             to_endpoint = item_config[id]["endpoint"]
@@ -115,7 +115,7 @@ def generate_pages_from_templates(item_config, template_dir_by_lang, output_base
                 localized_to_endpoint,
             )
 
-    @jinja2.contextfunction
+    @jinja2.pass_context
     def url_for_language(context, language):
         page_endpoint = page["endpoint"]
         from_endpoint = localize_endpoint(page_endpoint, context["language_tag"])
