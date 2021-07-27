@@ -1,9 +1,14 @@
+"""Translation-related functionality.
+
+Wraps the necessary functionality in the translate-toolkit package.
+"""
+
 import os
 import shutil
 from pathlib import Path
 from translate.storage import po, html
 from translate.convert.po2html import po2html
-import translate.tools.podebug as podebug
+from translate.tools.podebug import convertpo
 
 
 def translate_page_templates(source_dir, po_file_path, destination_dir):
@@ -32,7 +37,7 @@ def translate_page_templates(source_dir, po_file_path, destination_dir):
             shutil.copy(str(file), str(Path(destination_dir, file.name)))
 
 
-def extract_translatable_content(source_dir, pot_file_path):
+def extract_translation_units(source_dir, pot_file_path):
     outputstore = po.pofile()
     for file in Path(source_dir).glob("*"):
         if file.suffix.lower() in [".html"]:
@@ -49,4 +54,4 @@ def extract_translatable_content(source_dir, pot_file_path):
 
 def generate_dummy_translation(source_pot_file_path, po_file_path):
     with open(po_file_path, "wb") as outputfile:
-        podebug.convertpo(source_pot_file_path, outputfile, None, rewritestyle="unicode")
+        convertpo(source_pot_file_path, outputfile, None, rewritestyle="unicode")

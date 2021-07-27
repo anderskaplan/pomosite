@@ -1,3 +1,5 @@
+"""Create and edit site configurations."""
+
 from pathlib import Path
 import re
 import ast

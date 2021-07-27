@@ -5,7 +5,7 @@ import shutil
 from xml.etree import ElementTree
 
 from pomosite import generate, add_translation
-from pomosite.translation import extract_translatable_content, generate_dummy_translation
+from pomosite.translation import extract_translation_units, generate_dummy_translation
 
 base_path = Path(__file__).parent
 content_path = Path(base_path, "data/test_multilingual")
@@ -30,7 +30,7 @@ class TestMultilingual(unittest.TestCase):
     def generate_dummy_translation(self):
         os.makedirs(str(base_path / "temp"), exist_ok=True)
         pot_file_path = str(base_path / "temp/test_multilingual.pot")
-        extract_translatable_content(str(content_path / "templates"), pot_file_path)
+        extract_translation_units(str(content_path / "templates"), pot_file_path)
         po_file_path = str(base_path / "temp/dummy.po")
         generate_dummy_translation(pot_file_path, po_file_path)
 

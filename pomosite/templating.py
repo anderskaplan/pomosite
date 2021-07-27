@@ -1,3 +1,8 @@
+"""Main site generation functionality: templating and reference resolution.
+
+Wraps the necessary functionality in the jinja2 package.
+"""
+
 from pathlib import Path
 import jinja2
 import shutil
@@ -142,7 +147,7 @@ def generate_pages_from_templates(site_config, output_dir):
         jinja_env.globals["url_for_language"] = url_for_language
         return jinja_env
 
-    def render_pages(language_tag, template_path):
+    def render_pages(template_path, language_tag = None):
         jinja_env = create_jinja_environment(template_path)
         for page_id, page in site_config["item_config"].items():
             template = page.get("template", None)
@@ -164,12 +169,12 @@ def generate_pages_from_templates(site_config, output_dir):
                 fh.write(rendered_page)
 
     template_dir = site_config.get("template_dir", "#invalid#")
-    render_pages(None, template_dir)
+    render_pages(template_dir)
     translations = site_config.get("translations", {})
     for language_tag, language_config in translations.items():
         translated_template_dir = language_config["translated_template_dir"]
         translate_page_templates(template_dir, language_config["po_file_path"], translated_template_dir)
-        render_pages(language_tag, translated_template_dir)
+        render_pages(translated_template_dir, language_tag)
 
 
 def copy_resources(site_config, output_dir):
