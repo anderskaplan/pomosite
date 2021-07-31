@@ -23,7 +23,7 @@ class TestTemplating(unittest.TestCase):
 
     def test_page_templates(self):
         # given a directory with a few page templates
-        site_config = create_site_config(content_path + "/templates")
+        site_config = create_site_config(content_path + "/templates", "temp")
         self.assertEqual(
             3, len(site_config["item_config"]), "Expected to find three items"
         )

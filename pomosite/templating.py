@@ -192,10 +192,11 @@ def generate_pages_from_templates(site_config, output_dir, file_list=[]):
             file_list.append(str(output_path))
 
     template_dir = site_config.get("template_dir", "#invalid#")
+    temp_dir = site_config.get("temp_dir", "#invalid#")
     render_pages(template_dir)
     translations = site_config.get("translations", {})
     for language_tag, language_config in translations.items():
-        translated_template_dir = language_config["translated_template_dir"]
+        translated_template_dir = str(Path(temp_dir, language_tag))
         translate_page_templates(
             template_dir, language_config["po_file_path"], translated_template_dir
         )

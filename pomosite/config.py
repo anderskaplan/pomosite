@@ -15,7 +15,7 @@ def parse_page_config(str):
     return page_config
 
 
-def create_site_config(template_dir):
+def create_site_config(template_dir, temp_dir):
     """Create a site configuration dictionary based on a given template directory.
 
     All files in the template directory with valid page-config headers are added as items.
@@ -34,6 +34,7 @@ def create_site_config(template_dir):
 
     return {
         "template_dir": template_dir,
+        "temp_dir": temp_dir,
         "item_config": item_config,
     }
 
@@ -87,20 +88,16 @@ def add_resources(resources_dir, site_config):
             }
 
 
-def add_language(language_tag, po_file_path, translated_template_dir, site_config):
+def add_language(language_tag, po_file_path, site_config):
     """Add a language for a multi-lingual site.
 
     The language_tag is used in templates to refer to the language.
 
     The po_file_path specifies the PO file containing the translation for the language.
     A single PO file is used for all template files.
-
-    The translated_template_dir is a directory to write translated templates to. It is
-    typically a temporary directory.
     """
     if not "translations" in site_config:
         site_config["translations"] = {}
     site_config["translations"][language_tag] = {
         "po_file_path": po_file_path,
-        "translated_template_dir": str(Path(translated_template_dir, language_tag)),
     }

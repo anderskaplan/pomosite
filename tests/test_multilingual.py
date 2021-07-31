@@ -56,11 +56,11 @@ class TestMultilingual(unittest.TestCase):
                 },
             },
             "template_dir": str(content_path / "templates"),
+            "temp_dir": "temp",
         }
         add_language(
             "en",
             str(base_path / "temp/dummy.po"),
-            str(base_path / "temp/translated-templates"),
             site_config,
         )
         generate(site_config, output_dir)
