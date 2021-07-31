@@ -50,7 +50,7 @@ the generator script is a configuration file written in python. this gives you p
 the basic workflow of the generator script is as follows:
 1. create_site_config()
 2. add_resources(), once for each resource directory
-3. add_translation(), once for each translated language
+3. add_language(), once for each translated language
 4. generate()
 
 the first step creates a python dictionary called site_config. steps 2 and 3 add to this data container, and in step 4 it is used as the specification when generating the file tree for the site.

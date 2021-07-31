@@ -7,14 +7,19 @@ from pathlib import Path
 import jinja2
 import shutil
 import re
+import hashlib
 from .translation import translate_page_templates
 
 
 class ConfigurationError(Exception):
+    """Exception raised for configuration errors."""
+
     pass
 
 
 class InvalidReferenceError(Exception):
+    """Exception raised when an invalid reference is encountered."""
+
     pass
 
 
@@ -116,7 +121,7 @@ def ensure_parent_dir_exists(path):
         path.parent.mkdir(parents=True)
 
 
-def generate_pages_from_templates(site_config, output_dir):
+def generate_pages_from_templates(site_config, output_dir, file_list=[]):
     @jinja2.pass_context
     def url_for(context, id):
         item = site_config["item_config"].get(id, None)
@@ -184,6 +189,7 @@ def generate_pages_from_templates(site_config, output_dir):
             ensure_parent_dir_exists(output_path)
             with output_path.open(mode="wb") as fh:
                 fh.write(rendered_page)
+            file_list.append(str(output_path))
 
     template_dir = site_config.get("template_dir", "#invalid#")
     render_pages(template_dir)
@@ -196,19 +202,32 @@ def generate_pages_from_templates(site_config, output_dir):
         render_pages(translated_template_dir, language_tag)
 
 
-def copy_resources(site_config, output_dir):
+def copy_resources(site_config, output_dir, file_list=[]):
     for _, item in site_config["item_config"].items():
         if "source" in item:
             output_path = endpoint_to_output_path(item["endpoint"], output_dir, None)
             ensure_parent_dir_exists(output_path)
             shutil.copyfile(item["source"], output_path)
+            file_list.append(str(output_path))
 
 
-def generate(site_config, output_dir):
+def write_manifest_file(file_list, output_dir, manifest_file_path):
+    base_path = str(endpoint_to_output_path("", output_dir, None))
+    with open(manifest_file_path, "w") as manifest_file:
+        for file_name in sorted(file_list):
+            short_name = file_name[len(base_path) :].replace("\\", "/")
+            with open(file_name, "rb") as f:
+                hash = hashlib.sha256()
+                hash.update(f.read())
+                digest = hash.hexdigest()
+            manifest_file.write(f"{short_name};{digest}\n")
+
+
+def generate(site_config, output_dir, file_list=[]):
     """Generate a static web site according to the given configuration.
 
     NOTE The output directory is cleared as part of the process.
     """
     validate_config(site_config)
-    copy_resources(site_config, output_dir)
-    generate_pages_from_templates(site_config, output_dir)
+    copy_resources(site_config, output_dir, file_list)
+    generate_pages_from_templates(site_config, output_dir, file_list)

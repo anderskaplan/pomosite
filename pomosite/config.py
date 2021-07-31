@@ -59,8 +59,11 @@ def is_referable_content(file):
 
 
 def add_resources(resources_dir, site_config):
-    """Add resource files from a directory (and subdirectories) to the site
-    configuration.
+    """Add resource files from a directory to the site configuration.
+
+    Files in subdirectories are also added with the relative path preserved. For
+    example, the resource file resources/foo/image.gif will be added with URL path
+    /foo/image.gif.
 
     Resource files of common media types (.jpg, .css, etc) are added to the site
     configuration with their file name as ID, which must be unique.
@@ -84,10 +87,20 @@ def add_resources(resources_dir, site_config):
             }
 
 
-def add_translation(language_tag, po_file_path, translated_template_dir, site_config):
+def add_language(language_tag, po_file_path, translated_template_dir, site_config):
+    """Add a language for a multi-lingual site.
+
+    The language_tag is used in templates to refer to the language.
+
+    The po_file_path specifies the PO file containing the translation for the language.
+    A single PO file is used for all template files.
+
+    The translated_template_dir is a directory to write translated templates to. It is
+    typically a temporary directory.
+    """
     if not "translations" in site_config:
         site_config["translations"] = {}
     site_config["translations"][language_tag] = {
         "po_file_path": po_file_path,
-        "translated_template_dir": translated_template_dir,
+        "translated_template_dir": str(Path(translated_template_dir, language_tag)),
     }

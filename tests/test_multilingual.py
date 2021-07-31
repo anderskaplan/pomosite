@@ -4,7 +4,7 @@ from pathlib import Path
 import shutil
 from xml.etree import ElementTree
 
-from pomosite import generate, add_translation
+from pomosite import generate, add_language
 from pomosite.translation import extract_translation_units, generate_dummy_translation
 
 base_path = Path(__file__).parent
@@ -57,7 +57,7 @@ class TestMultilingual(unittest.TestCase):
             },
             "template_dir": str(content_path / "templates"),
         }
-        add_translation(
+        add_language(
             "en",
             str(base_path / "temp/dummy.po"),
             str(base_path / "temp/translated-templates"),
