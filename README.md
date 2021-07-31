@@ -66,18 +66,25 @@ Pomosite uses the Jinja templating engine, so please refer to the [Jinja documen
 
 ### Referencing pages and translations
 To reference a page or resource from a template, pass its unique ID to the `url_for()` function like so:
+
   `<a href="{{ url_for('PAGE1') }}">link to page 1</a>`
+
 Language tags will be applied automatically for URLs to templated pages.
 
-To reference a particular language version of a page, pass the language tag to the `url_for_language()` function like so:
+To reference a particular language version of the current page, pass the language tag to the `url_for_language()` function like so:
+
   `<a href="{{url_for_language('en')}}">English</a>`
+
 A common use case is a menu where the user gets to select language.
 
 ### Page-config headers
 All template files for the site should be placed in one directory.
 `create_site_config()` scans all the files in the template directory for page-config headers and adds the ones with valid headers to the site configuration. a page-config header is always the first line of the file and is on the format:
+
   `{# key1: value1, key2: value2, ... #}`
+
 for example:
+
   `{# id: "START", endpoint: "/" #}`
 
 there are two mandatory key/value pairs for a page:
@@ -91,7 +98,9 @@ resources are content files like images and style sheets which do not need templ
 Note that you need to be careful with what you put in the resource directory, so that you don't publish e.g. your git repository by mistake. "Hidden" files where the name starts with a full stop are deliberately included in the copying operation, as we may want to include files like ".htaccess".
 
 resource files of common media types (.jpg, .css, etc) are added to the site configuration with their file name as ID. this means that you can refer to them from your templates like so:
+
   `<img src="{{url_for('my-image.jpg')}}">`
+
 note that this means that you must give all resource files of common media types unique names.
 
 ## Translations
@@ -112,14 +121,13 @@ url scheme: / => /lang/
 
 ## Set up the development environment
 
-installera python 3.x
-- sätt upp python virtual environment, "python -m venv python-venv" och "python-venv\Scripts\activate.bat"
+install python 3.x
+it is recommended to use a python virtual environment. on Windows, use "python -m venv python-venv" followed by "python-venv\Scripts\activate.bat".
 pip install -r requirements.txt
 
 ## Run the unit tests
 
-tests\translate-templates.bat
-pytest
+run pytest
 
 ## Run code checks
 
