@@ -1,6 +1,6 @@
 """Translation-related functionality.
 
-Wraps the necessary functionality in the translate-toolkit package.
+Isolation layer for the translate-toolkit package.
 """
 
 import os
@@ -38,6 +38,10 @@ def translate_page_templates(source_dir, po_file_path, destination_dir):
 
 
 def extract_translation_units(source_dir, pot_file_path):
+    """Extract translatable content from files in a specified directory and write to a POT file.
+
+    Currently only HTML files are processed.
+    """
     outputstore = po.pofile()
     for file in Path(source_dir).glob("*"):
         if file.suffix.lower() in [".html"]:
@@ -53,5 +57,6 @@ def extract_translation_units(source_dir, pot_file_path):
 
 
 def generate_dummy_translation(source_pot_file_path, po_file_path):
+    """Generate a dummy translation for a given POT file."""
     with open(po_file_path, "wb") as outputfile:
         convertpo(source_pot_file_path, outputfile, None, rewritestyle="unicode")

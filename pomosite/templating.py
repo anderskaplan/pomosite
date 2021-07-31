@@ -1,6 +1,6 @@
 """Main site generation functionality: templating and reference resolution.
 
-Wraps the necessary functionality in the jinja2 package.
+Isolation layer for the jinja2 package.
 """
 
 from pathlib import Path
@@ -188,6 +188,10 @@ def copy_resources(site_config, output_dir):
 
 
 def generate(site_config, output_dir):
+    """Generate a static web site according to the given configuration.
+
+    NOTE The output directory is cleared as part of the process.
+    """
     validate_config(site_config)
     copy_resources(site_config, output_dir)
     generate_pages_from_templates(site_config, output_dir)

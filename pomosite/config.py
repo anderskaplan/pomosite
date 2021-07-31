@@ -16,7 +16,10 @@ def parse_page_config(str):
 
 
 def create_site_config(template_dir):
-    """Find all files in a given directory with a valid page-config header and add them to the config dict."""
+    """Create a site configuration dictionary based on a given template directory.
+
+    All files in the template directory with valid page-config headers are added as items.
+    """
     item_config = {}
     for file in Path(template_dir).glob("*"):
         if not file.is_dir():
@@ -35,38 +38,45 @@ def create_site_config(template_dir):
     }
 
 
-# add static files from a content directory structure to the page config.
-# files of common types (style sheets, images, etc) are added with their file name as key, so that
-# they can be referred to from dynamic pages. note that this means that they must have unique names.
-# no translation.
-# no exclusion of files with special names, as we may want to include files like ".htaccess".
-
-
 def is_referable_content(file):
     return file.suffix.lower() in [
         ".css",
+        ".gif",
         ".jpg",
+        ".jpeg",
         ".png",
+        ".svg",
+        ".ps",
         ".eps",
         ".pdf",
         ".tif",
         ".tiff",
+        ".mp4",
+        ".mpg",
+        ".mpeg",
+        ".avi",
     ]
 
 
-def add_resources_dir(resources_dir, site_config):
-    item_config = site_config["item_config"]
+def add_resources(resources_dir, site_config):
+    """Add resource files from a directory (and subdirectories) to the site
+    configuration.
+
+    Resource files of common media types (.jpg, .css, etc) are added to the site
+    configuration with their file name as ID, which must be unique.
+    """
+    item_config = site_config.get("item_config")
     for file in Path(resources_dir).glob("**/*"):
-        if not file.is_dir():
+        if file.is_file():
             if is_referable_content(file):
                 id = file.name
             else:
                 id = "_%d" % len(item_config)
 
             if id in item_config:
-                raise ValueError("Static file already exists: " + id)
+                raise ValueError("An item with the same ID already exists: " + id)
 
-            endpoint = str(file)[len(resources_dir) :].replace("\\", "/")
+            endpoint = str(file)[len(resources_dir):].replace("\\", "/")
 
             item_config[id] = {
                 "endpoint": endpoint,

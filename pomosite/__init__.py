@@ -4,4 +4,4 @@ More info: https://github.com/anderskaplan/pomosite/blob/main/README.md
 """
 
 from .templating import ConfigurationError, InvalidReferenceError, generate
-from .config import create_site_config, add_resources_dir, add_translation
+from .config import create_site_config, add_resources, add_translation
