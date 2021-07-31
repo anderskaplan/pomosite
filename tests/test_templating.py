@@ -2,7 +2,12 @@ import unittest
 from pathlib import Path
 import shutil
 from xml.etree import ElementTree
-from pomosite import generate, create_site_config, InvalidReferenceError
+from pomosite import (
+    generate,
+    create_site_config,
+    InvalidReferenceError,
+    ConfigurationError,
+)
 
 content_path = str(Path(__file__).parent / "data/test_templating")
 output_dir = "temp/test_templating"
@@ -19,7 +24,9 @@ class TestTemplating(unittest.TestCase):
     def test_page_templates(self):
         # given a directory with a few page templates
         site_config = create_site_config(content_path + "/templates")
-        self.assertEqual(3, len(site_config["item_config"]), "Expected to find three items")
+        self.assertEqual(
+            3, len(site_config["item_config"]), "Expected to find three items"
+        )
         self.assertEqual(
             True,
             site_config["item_config"]["P1"]["bool-value"],
@@ -82,4 +89,18 @@ class TestTemplating(unittest.TestCase):
         # when generating the site
         # then the appropriate exception is raised
         with self.assertRaises(InvalidReferenceError):
+            generate(site_config, output_dir)
+
+    def test_items_cannot_be_both_templates_and_static_resources(self):
+        site_config = {
+            "item_config": {
+                "P1": {
+                    "endpoint": "/xyz",
+                    "source": Path(content_path, "templates/p1.html"),
+                    "template": "p1.html",
+                }
+            },
+            "template_dir": content_path + "/templates",
+        }
+        with self.assertRaises(ConfigurationError):
             generate(site_config, output_dir)

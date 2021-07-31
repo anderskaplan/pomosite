@@ -59,9 +59,7 @@ class TestUrlFor(unittest.TestCase):
         output_file = str(Path(Path(".").resolve(), output_dir, "index.html"))
         self.assertEqual(self.get_first_a_href(output_file), "./", "link from P1 to P1")
 
-        output_file = str(
-            Path(Path(".").resolve(), output_dir, "subpage/index.html")
-        )
+        output_file = str(Path(Path(".").resolve(), output_dir, "subpage/index.html"))
         self.assertEqual(
             self.get_first_a_href(output_file), "../", "link from P2 to P1"
         )
@@ -80,9 +78,7 @@ class TestUrlFor(unittest.TestCase):
             self.get_first_a_href(output_file), "../../", "link from P4 to P1"
         )
 
-        output_file = str(
-            Path(Path(".").resolve(), output_dir, "a/page/somewhere")
-        )
+        output_file = str(Path(Path(".").resolve(), output_dir, "a/page/somewhere"))
         hrefs = self.get_hrefs(output_file)
         item_config = site_config["item_config"]
         self.assertEqual(hrefs[0], item_config["P1"]["endpoint"])

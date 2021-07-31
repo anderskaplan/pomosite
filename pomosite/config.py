@@ -76,11 +76,11 @@ def add_resources(resources_dir, site_config):
             if id in item_config:
                 raise ValueError("An item with the same ID already exists: " + id)
 
-            endpoint = str(file)[len(resources_dir):].replace("\\", "/")
+            endpoint = str(file)[len(resources_dir) :].replace("\\", "/")
 
             item_config[id] = {
                 "endpoint": endpoint,
-                "source": file,
+                "source": str(file),
             }
 
 

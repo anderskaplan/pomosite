@@ -57,7 +57,12 @@ class TestMultilingual(unittest.TestCase):
             },
             "template_dir": str(content_path / "templates"),
         }
-        add_translation("en", str(base_path / "temp/dummy.po"), str(base_path / "temp/translated-templates"), site_config)
+        add_translation(
+            "en",
+            str(base_path / "temp/dummy.po"),
+            str(base_path / "temp/translated-templates"),
+            site_config,
+        )
         generate(site_config, output_dir)
 
     def test_should_generate_pages_in_the_default_language(self):
@@ -82,9 +87,7 @@ class TestMultilingual(unittest.TestCase):
             Path(output_file).is_file(), "Expected to find file: " + output_file
         )
 
-        output_file = str(
-            Path(Path.cwd(), output_dir, "om-oss", "en", "index.html")
-        )
+        output_file = str(Path(Path.cwd(), output_dir, "om-oss", "en", "index.html"))
         self.assertTrue(
             Path(output_file).is_file(), "Expected to find file: " + output_file
         )
@@ -134,9 +137,7 @@ class TestMultilingual(unittest.TestCase):
         )
         self.assertEqual(tree.find(".//a[.='şƈřīƥŧ']").get("href"), "script.php")
 
-        output_file = str(
-            Path(Path.cwd(), output_dir, "om-oss", "en", "index.html")
-        )
+        output_file = str(Path(Path.cwd(), output_dir, "om-oss", "en", "index.html"))
         tree = ElementTree.parse(output_file)
         self.assertEqual(tree.findtext(".//title").strip(), "Ǿḿ ǿşş - Ḿẏƈķḗŧ ŀīḿ")
         self.assertEqual(tree.find(".//img").get("src"), "../../lim.jpeg")

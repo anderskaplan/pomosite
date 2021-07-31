@@ -41,13 +41,27 @@ def validate_config(site_config):
     all_endpoints = {}
     for page_id, page in site_config["item_config"].items():
         if not "endpoint" in page:
-            raise ConfigurationError("Endpoint for page id %s is missing." % page_id)
+            raise ConfigurationError(
+                "Item with id %s is missing the endpoint attribute." % page_id
+            )
         validate_endpoint(page["endpoint"], "page id %s" % page_id)
         if page["endpoint"] in all_endpoints:
-            raise ConfigurationError("Duplicate endpoint %s" % page["endpoint"])
+            raise ConfigurationError(
+                "Found duplicate endpoint %s in the site configuration."
+                % page["endpoint"]
+            )
         all_endpoints[page["endpoint"]] = page_id
+
         if "template" in page and not "template_dir" in site_config:
-            raise ConfigurationError("Template directory is missing.")
+            raise ConfigurationError(
+                "Template directory is missing in the site configuration."
+            )
+
+        if "template" in page and "source" in page:
+            raise ConfigurationError(
+                "Item with id %s has both 'template' and 'source' attributes. It may only have one."
+                % page_id
+            )
 
 
 def make_relative_url(from_endpoint, to_endpoint):
@@ -131,7 +145,10 @@ def generate_pages_from_templates(site_config, output_dir):
         page_endpoint = context["page_endpoint"]
         from_endpoint = localize_endpoint(page_endpoint, context["language_tag"])
         to_language_tag = None
-        if "translations" in site_config and language_tag in site_config["translations"]:
+        if (
+            "translations" in site_config
+            and language_tag in site_config["translations"]
+        ):
             to_language_tag = language_tag
         to_endpoint = localize_endpoint(page_endpoint, to_language_tag)
         return make_relative_url(from_endpoint, to_endpoint)
@@ -147,7 +164,7 @@ def generate_pages_from_templates(site_config, output_dir):
         jinja_env.globals["url_for_language"] = url_for_language
         return jinja_env
 
-    def render_pages(template_path, language_tag = None):
+    def render_pages(template_path, language_tag=None):
         jinja_env = create_jinja_environment(template_path)
         for page_id, page in site_config["item_config"].items():
             template = page.get("template", None)
@@ -173,16 +190,16 @@ def generate_pages_from_templates(site_config, output_dir):
     translations = site_config.get("translations", {})
     for language_tag, language_config in translations.items():
         translated_template_dir = language_config["translated_template_dir"]
-        translate_page_templates(template_dir, language_config["po_file_path"], translated_template_dir)
+        translate_page_templates(
+            template_dir, language_config["po_file_path"], translated_template_dir
+        )
         render_pages(translated_template_dir, language_tag)
 
 
 def copy_resources(site_config, output_dir):
     for _, item in site_config["item_config"].items():
         if "source" in item:
-            output_path = endpoint_to_output_path(
-                item["endpoint"], output_dir, None
-            )
+            output_path = endpoint_to_output_path(item["endpoint"], output_dir, None)
             ensure_parent_dir_exists(output_path)
             shutil.copyfile(item["source"], output_path)
 
