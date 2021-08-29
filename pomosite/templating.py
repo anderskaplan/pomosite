@@ -107,13 +107,18 @@ def localize_endpoint(endpoint, language_tag):
     return "/".join(atoms)
 
 
-def endpoint_to_output_path(endpoint, output_dir, language_tag):
+def get_output_path(item, output_dir, language_tag):
+    endpoint = item["endpoint"]
     if endpoint.endswith("/"):
-        endpoint = endpoint + "index.html"
+        if "template" in item:
+            source_file = item["template"]
+        else:
+            source_file = item["source"]
+        endpoint = endpoint + "index" + Path(source_file).suffix
 
     endpoint = localize_endpoint(endpoint, language_tag)
 
-    return Path(Path(".").resolve(), output_dir, strip_leading_slash(endpoint))
+    return Path(".").resolve() / output_dir / strip_leading_slash(endpoint)
 
 
 def ensure_parent_dir_exists(path):
@@ -183,9 +188,7 @@ def generate_pages_from_templates(site_config, output_dir, file_list=[]):
                 "rooted_urls": page.get("rooted-urls", False),
             }
             rendered_page = jinja_template.render(context).encode("utf-8")
-            output_path = endpoint_to_output_path(
-                page["endpoint"], output_dir, language_tag
-            )
+            output_path = get_output_path(page, output_dir, language_tag)
             ensure_parent_dir_exists(output_path)
             with output_path.open(mode="wb") as fh:
                 fh.write(rendered_page)
@@ -206,14 +209,14 @@ def generate_pages_from_templates(site_config, output_dir, file_list=[]):
 def copy_resources(site_config, output_dir, file_list=[]):
     for _, item in site_config["item_config"].items():
         if "source" in item:
-            output_path = endpoint_to_output_path(item["endpoint"], output_dir, None)
+            output_path = get_output_path(item, output_dir, None)
             ensure_parent_dir_exists(output_path)
             shutil.copyfile(item["source"], output_path)
             file_list.append(str(output_path))
 
 
 def write_manifest_file(file_list, output_dir, manifest_file_path):
-    base_path = str(endpoint_to_output_path("", output_dir, None))
+    base_path = Path(".").resolve() / output_dir
     with open(manifest_file_path, "w") as manifest_file:
         for file_name in sorted(file_list):
             short_name = file_name[len(base_path) :].replace("\\", "/")

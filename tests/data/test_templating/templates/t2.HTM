@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{page_id}}</title>
+    </head>
+    <body>
+        {% include 'header.html' %}
+        <p>{{q}}</p>
+        <a href="{{ url_for('P1') }}">link to P1</a>
+    </body>
+</html>

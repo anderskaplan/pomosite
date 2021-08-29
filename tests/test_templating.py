@@ -65,7 +65,7 @@ class TestTemplating(unittest.TestCase):
             "item_config": {
                 "S1": {
                     "endpoint": "/xyz",
-                    "source": Path(content_path, "templates/p1.html"),
+                    "source": str(Path(content_path, "templates/p1.html")),
                 }
             }
         }

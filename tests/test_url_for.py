@@ -44,7 +44,7 @@ class TestUrlFor(unittest.TestCase):
                 "P4": {
                     "endpoint": "/subpage/subsub/",
                     "template": "p1.html",
-                }
+                },
             },
             "template_dir": content_path + "/templates",
         }
@@ -68,6 +68,43 @@ class TestUrlFor(unittest.TestCase):
 
         output_file = str(
             Path(Path(".").resolve(), output_dir, "subpage/subsub/index.html")
+        )
+        self.assertEqual(
+            self.get_first_a_href(output_file), "../../", "link from P4 to P1"
+        )
+
+    def test_should_map_directory_endpoints_to_non_html_files(self):
+        # i.e., preserve the file extension on the index file.
+        site_config = {
+            "item_config": {
+                "P1": {
+                    "endpoint": "/",
+                    "template": "p1.html",
+                },
+                "P2": {
+                    "endpoint": "/subpage/",
+                    "template": "t2.HTM",
+                },
+                "P3": {
+                    "endpoint": "/subpage/subsub/",
+                    "template": "t3.php",
+                },
+            },
+            "template_dir": content_path + "/templates",
+        }
+
+        generate(site_config, output_dir)
+
+        output_file = str(Path(Path(".").resolve(), output_dir, "index.html"))
+        self.assertEqual(self.get_first_a_href(output_file), "./", "link from P1 to P1")
+
+        output_file = str(Path(Path(".").resolve(), output_dir, "subpage/index.HTM"))
+        self.assertEqual(
+            self.get_first_a_href(output_file), "../", "link from P2 to P1"
+        )
+
+        output_file = str(
+            Path(Path(".").resolve(), output_dir, "subpage/subsub/index.php")
         )
         self.assertEqual(
             self.get_first_a_href(output_file), "../../", "link from P4 to P1"
