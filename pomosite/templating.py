@@ -216,7 +216,7 @@ def copy_resources(site_config, output_dir, file_list=[]):
 
 
 def write_manifest_file(file_list, output_dir, manifest_file_path):
-    base_path = Path(".").resolve() / output_dir
+    base_path = str(Path(".").resolve() / output_dir)
     with open(manifest_file_path, "w") as manifest_file:
         for file_name in sorted(file_list):
             short_name = file_name[len(base_path) :].replace("\\", "/")
