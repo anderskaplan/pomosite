@@ -116,7 +116,7 @@ class TestUrlFor(unittest.TestCase):
                 "404-PAGE": {
                     "endpoint": "/a/page/somewhere",
                     "template": "special-page.html",
-                    "rooted-urls": True,
+                    "rooted_urls": True,
                 },
                 "P1": {
                     "endpoint": "/",

@@ -141,10 +141,10 @@ def generate_pages_from_templates(site_config, output_dir, file_list=[]):
         else:
             localized_to_endpoint = to_endpoint
 
-        if context["rooted_urls"]:
+        if context.get("rooted_urls", False):
             return localized_to_endpoint
         else:
-            from_endpoint = context["page_endpoint"]
+            from_endpoint = context["endpoint"]
             return make_relative_url(
                 localize_endpoint(from_endpoint, context["language_tag"]),
                 localized_to_endpoint,
@@ -152,7 +152,7 @@ def generate_pages_from_templates(site_config, output_dir, file_list=[]):
 
     @jinja2.pass_context
     def url_for_language(context, language_tag):
-        page_endpoint = context["page_endpoint"]
+        page_endpoint = context["endpoint"]
         from_endpoint = localize_endpoint(page_endpoint, context["language_tag"])
         to_language_tag = None
         if (
@@ -182,10 +182,9 @@ def generate_pages_from_templates(site_config, output_dir, file_list=[]):
                 continue
             jinja_template = jinja_env.get_template(template)
             context = {
+                **page,
                 "page_id": page_id,
-                "page_endpoint": page["endpoint"],
                 "language_tag": language_tag,
-                "rooted_urls": page.get("rooted-urls", False),
             }
             rendered_page = jinja_template.render(context).encode("utf-8")
             output_path = get_output_path(page, output_dir, language_tag)

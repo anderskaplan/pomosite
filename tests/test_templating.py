@@ -28,7 +28,7 @@ class TestTemplating(unittest.TestCase):
         )
         self.assertEqual(
             True,
-            site_config["item_config"]["P1"]["bool-value"],
+            site_config["item_config"]["P1"]["bool_value"],
             "Expected special config variable to be set correctly",
         )
 
@@ -59,6 +59,13 @@ class TestTemplating(unittest.TestCase):
         self.assertTrue(
             Path(output_file).is_file(), "Expected to find file: " + output_file
         )
+
+    def test_access_config_variables_from_template(self):
+        site_config = create_site_config(content_path + "/templates", "temp")
+        generate(site_config, output_dir)
+        output_file = str(Path(".").resolve() / output_dir / "index.html")
+        tree = ElementTree.parse(output_file)
+        self.assertEqual(tree.findtext(".//blockquote"), "True")
 
     def test_generate_resources(self):
         site_config = {
