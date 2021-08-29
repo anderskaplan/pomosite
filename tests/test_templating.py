@@ -21,8 +21,7 @@ class TestTemplating(unittest.TestCase):
             print("removing " + output_dir)
             shutil.rmtree(output_dir)
 
-    def test_page_templates(self):
-        # given a directory with a few page templates
+    def test_create_site_config(self):
         site_config = create_site_config(content_path + "/templates", "temp")
         self.assertEqual(
             3, len(site_config["item_config"]), "Expected to find three items"
@@ -32,6 +31,10 @@ class TestTemplating(unittest.TestCase):
             site_config["item_config"]["P1"]["bool-value"],
             "Expected special config variable to be set correctly",
         )
+
+    def test_generate_templates(self):
+        # given a directory with page templates
+        site_config = create_site_config(content_path + "/templates", "temp")
 
         # when generating the site
         generate(site_config, output_dir)
@@ -57,7 +60,7 @@ class TestTemplating(unittest.TestCase):
             Path(output_file).is_file(), "Expected to find file: " + output_file
         )
 
-    def test_resources(self):
+    def test_generate_resources(self):
         site_config = {
             "item_config": {
                 "S1": {
