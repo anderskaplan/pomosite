@@ -137,3 +137,20 @@ class TestUrlFor(unittest.TestCase):
         item_config = site_config["item_config"]
         self.assertEqual(hrefs[0], item_config["P1"]["endpoint"])
         self.assertEqual(hrefs[1], item_config["P2"]["endpoint"])
+
+    def test_rooted_url_in_url_for(self):
+        # given a page where the url_for filter is used with the rooted parameter set to True
+        site_config = {
+            "item_config": {
+                "PAGE": {
+                    "endpoint": "/page.html",
+                    "template": "rooted-url.html",
+                }
+            },
+            "template_dir": content_path + "/templates",
+        }
+        generate(site_config, output_dir)
+        output_file = str(Path(".").resolve() / output_dir / "page.html")
+        hrefs = self.get_hrefs(output_file)
+        item_config = site_config["item_config"]
+        self.assertEqual(hrefs[0], item_config["PAGE"]["endpoint"])

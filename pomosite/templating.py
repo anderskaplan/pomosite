@@ -128,7 +128,7 @@ def ensure_parent_dir_exists(path):
 
 def generate_pages_from_templates(site_config, output_dir, file_list=[]):
     @jinja2.pass_context
-    def url_for(context, id):
+    def url_for(context, id, rooted=False):
         item = site_config["item_config"].get(id, None)
         if not item:
             raise InvalidReferenceError('Invalid page id "%s".' % id)
@@ -141,7 +141,7 @@ def generate_pages_from_templates(site_config, output_dir, file_list=[]):
         else:
             localized_to_endpoint = to_endpoint
 
-        if context.get("rooted_urls", False):
+        if rooted or context.get("rooted_urls", False):
             return localized_to_endpoint
         else:
             from_endpoint = context["endpoint"]
@@ -229,7 +229,7 @@ def write_manifest_file(file_list, output_dir, manifest_file_path):
 def generate(site_config, output_dir, file_list=[]):
     """Generate a static web site according to the given configuration.
 
-    NOTE The output directory is cleared as part of the process.
+    NOTE The output directory is created if it doesn't already exist.
     """
     validate_config(site_config)
     copy_resources(site_config, output_dir, file_list)
