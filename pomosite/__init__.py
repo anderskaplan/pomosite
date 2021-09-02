@@ -9,4 +9,9 @@ from .templating import (
     generate,
     write_manifest_file,
 )
-from .config import create_site_config, add_resources, add_language
+from .config import (
+    create_site_config,
+    add_resources,
+    add_language,
+    is_common_media_file,
+)
