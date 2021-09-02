@@ -5,6 +5,7 @@ from xml.etree import ElementTree
 from pomosite import (
     generate,
     create_site_config,
+    add_resources,
     InvalidReferenceError,
     ConfigurationError,
 )
@@ -83,6 +84,16 @@ class TestTemplating(unittest.TestCase):
         self.assertTrue(
             Path(output_file).is_file(), "Expected to find file: " + output_file
         )
+
+    def test_add_resources(self):
+        site_config = {"item_config": {}}
+        add_resources(str(Path(content_path) / "resources"), site_config)
+
+        item_config = site_config["item_config"]
+        self.assertEqual(3, len(item_config))
+        self.assertTrue("lim.jpeg" in item_config)
+        self.assertTrue("a.css" in item_config)
+        self.assertFalse("b.php" in item_config)
 
     def test_invalid_resource_id(self):
         # given a page template with a url_for() call to a non-existent item

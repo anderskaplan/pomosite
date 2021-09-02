@@ -39,7 +39,13 @@ def create_site_config(template_dir, temp_dir):
     }
 
 
-def is_referable_content(file):
+def is_common_media_file(file):
+    """Tests whether a given file is a media file.
+
+    The input parameter should be a Path object.
+
+    The check is performed on the file extension.
+    """
     return file.suffix.lower() in [
         ".css",
         ".gif",
@@ -59,20 +65,21 @@ def is_referable_content(file):
     ]
 
 
-def add_resources(resources_dir, site_config):
+def add_resources(resources_dir, site_config, referable_test=is_common_media_file):
     """Add resource files from a directory to the site configuration.
 
     Files in subdirectories are also added with the relative path preserved. For
     example, the resource file resources/foo/image.gif will be added with URL path
     /foo/image.gif.
 
-    Resource files of common media types (.jpg, .css, etc) are added to the site
-    configuration with their file name as ID, which must be unique.
+    Any file which tests as referable is added to the site configuration
+    with its name (including suffix) as ID. This means that the file name must be
+    unique.
     """
     item_config = site_config.get("item_config")
     for file in Path(resources_dir).glob("**/*"):
         if file.is_file():
-            if is_referable_content(file):
+            if referable_test(file):
                 id = file.name
             else:
                 id = "_%d" % len(item_config)
