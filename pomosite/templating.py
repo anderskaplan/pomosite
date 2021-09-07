@@ -128,7 +128,7 @@ def ensure_parent_dir_exists(path):
 
 def generate_pages_from_templates(site_config, output_dir, file_list=[]):
     @jinja2.pass_context
-    def url_for(context, id, rooted=False):
+    def url_for(context, id, rooted=None):
         item = site_config["item_config"].get(id, None)
         if not item:
             raise InvalidReferenceError('Invalid page id "%s".' % id)
@@ -141,7 +141,10 @@ def generate_pages_from_templates(site_config, output_dir, file_list=[]):
         else:
             localized_to_endpoint = to_endpoint
 
-        if rooted or context.get("rooted_urls", False):
+        if rooted is None:
+            rooted = context.get("rooted_urls", False)
+
+        if rooted:
             return localized_to_endpoint
         else:
             from_endpoint = context["endpoint"]
